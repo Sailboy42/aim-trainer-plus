@@ -2,7 +2,7 @@
 Controller for Aim Trainer
 """
 import pygame
-from pygame_gui import UI_BUTTON_PRESSED
+from pygame import MOUSEBUTTONDOWN, MOUSEMOTION, QUIT, KEYDOWN, K_ESCAPE
 
 
 class AimTrainerController:
@@ -29,8 +29,10 @@ class AimTrainerController:
             a boolean dependent on choice
         """
         # check to see if player is trying to exit game
-        if pygame.event.get == MOUSEBUTTONDOWN:
-            return True
+        for event in pygame.event.get():
+            if event.type == MOUSEBUTTONDOWN:
+                return True
+        return False
 
     def choose_difficulty(self):
         """

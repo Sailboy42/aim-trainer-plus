@@ -1,9 +1,9 @@
 """
 Module for Aim Trainer
 """
+import sys
 import random
 import pygame
-import sys
 
 
 def compute_accuracy(hits: int, shots: int) -> float:
@@ -100,20 +100,6 @@ class AimTrainerRange:
             a int being the score
         """
         return self._score
-
-    def mouse_y(self):
-        """
-        Returns:
-            a int of the mouse y position
-        """
-        return self.mouse_y
-
-    def mouse_x(self):
-        """
-        Returns:
-            a int of the mouse x position
-        """
-        return self.mouse_x
 
     def terminate(self):
         """

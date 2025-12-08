@@ -1,9 +1,7 @@
 """
 View for Aim Trainer
 """
-from typing import TYPE_CHECKING
 import pygame
-import pygame_gui
 
 
 class AimTrainerView:
@@ -49,16 +47,18 @@ class AimTrainerView:
         )
 
     def draw_text(
-        self,
-        text,
-        surface,
-        x,
-        y,
-        font=None,
-        color=None,
-    ):
+        self, text, surface, x, y, font=None, color=None
+    ):  # pylint: disable=too-many-arguments
         """
         Displays text on screen
+
+        Args:
+            text: The text to render
+            surface: The pygame surface to draw on
+            x: X coordinate for text placement
+            y: Y coordinate for text placement
+            font: Optional pygame font object (defaults to FONT_DEFAULT)
+            color: Optional RGB color tuple (defaults to RED)
         """
         if font is None:
             font = self.FONT_DEFAULT

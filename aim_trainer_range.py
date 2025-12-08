@@ -1,8 +1,25 @@
 """
 Module for Aim Trainer
 """
+
 import pygame, random, sys, os
 from pygame.locals import *
+
+
+def compute_accuracy(hits: int, shots: int) -> float:
+    """
+    Compute shooting accuracy as a percentage.
+
+    Args:
+        hits: Number of successful hits
+        shots: Total number of shots taken
+
+    Returns:
+        Accuracy as a percentage (0-100), rounded to nearest integer
+    """
+    if shots != 0 and hits != 0:
+        return round(hits / shots * 100)
+    return 0
 
 
 class AimTrainerRange:
@@ -83,14 +100,14 @@ class AimTrainerRange:
             a int being the score
         """
         return self._score
-    
+
     def MOUSE_Y(self):
         """
         Returns:
             a int of the mouse y position
         """
         return self._MOUSE_Y
-    
+
     def MOUSE_X(self):
         """
         Returns:
@@ -226,10 +243,4 @@ class AimTrainerRange:
         Returns:
             accuracy: a int being accuracy
         """
-        # Calculate score
-        if self._totalShots != 0 and self._hitShots != 0:
-            accuracy = round(self._hitShots / self._totalShots * 100)
-        else:
-            accuracy = 0
-
-        return accuracy
+        return compute_accuracy(self._hit_shots, self._total_shots)

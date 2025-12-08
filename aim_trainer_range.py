@@ -1,9 +1,9 @@
 """
 Module for Aim Trainer
 """
-
-import pygame, random, sys, os
-from pygame.locals import *
+import random
+import pygame
+import sys
 
 
 def compute_accuracy(hits: int, shots: int) -> float:
@@ -73,12 +73,12 @@ class AimTrainerRange:
         self._targets = []
         self._amount_targets = 0
         self._score = 0
-        self.FPS = 75
+        self.fps = 75
         self._hit_shots = 0
         self._total_shots = 0
         # Mouse position
-        self._MOUSE_Y = round(self.WINDOW_HEIGHT / 2)
-        self._MOUSE_X = round(self.WINDOW_WIDTH / 2)
+        self.mouse_y = round(self.WINDOW_HEIGHT / 2)
+        self.mouse_x = round(self.WINDOW_WIDTH / 2)
 
     def config(self):
         """
@@ -101,21 +101,21 @@ class AimTrainerRange:
         """
         return self._score
 
-    def MOUSE_Y(self):
+    def mouse_y(self):
         """
         Returns:
             a int of the mouse y position
         """
-        return self._MOUSE_Y
+        return self.mouse_y
 
-    def MOUSE_X(self):
+    def mouse_x(self):
         """
         Returns:
             a int of the mouse x position
         """
-        return self._MOUSE_X
+        return self.mouse_x
 
-    def terminate():
+    def terminate(self):
         """
         Ends Pygame
         """
@@ -146,18 +146,18 @@ class AimTrainerRange:
             a list containing ints that determine game difficulty settings
         """
         # Settings for difficulty. (time, amount of target, size of target)
-        DIFFICULTY_SETTINGS = {
+        difficulty_settings = {
             "easy": [9, 2, 40],
             "medium": [6, 4, 30],
             "hard": [5, 5, 20],
         }
         # Saves settings to config per difficulty
         if difficulty == "easy":
-            self._config = DIFFICULTY_SETTINGS["easy"]
+            self._config = difficulty_settings["easy"]
         elif difficulty == "medium":
-            self._config = DIFFICULTY_SETTINGS["medium"]
+            self._config = difficulty_settings["medium"]
         elif difficulty == "hard":
-            self._config = DIFFICULTY_SETTINGS["hard"]
+            self._config = difficulty_settings["hard"]
         return self._config
 
     def resize_target(self):
@@ -208,10 +208,10 @@ class AimTrainerRange:
         for target in self._targets[:]:
             # if target hit play hit sound, remove target, and add to score
             if (
-                self._MOUSE_X > target.topleft[0]
-                and self._MOUSE_X < target.bottomright[0]
-                and self._MOUSE_Y > target.topleft[1]
-                and self._MOUSE_Y < target.bottomright[1]
+                self.mouse_x > target.topleft[0]
+                and self.mouse_x < target.bottomright[0]
+                and self.mouse_y > target.topleft[1]
+                and self.mouse_y < target.bottomright[1]
             ):
                 self._targets.remove(target)
                 self._amount_targets -= 1
@@ -229,9 +229,9 @@ class AimTrainerRange:
         if self._config[0] <= 0:
             # end game and display player stats
             return False
-        self.tick_counter += 1
+        self._tick_counter += 1
 
-        if self._tick_counter % self.FPS == 0:
+        if self._tick_counter % self.fps == 0:
             # game still going subtract from time
             self._config[0] -= 1
         return True

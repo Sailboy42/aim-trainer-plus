@@ -78,8 +78,8 @@ def test_target_hit_detection():
     game_range._targets.append(target_rect)
     
     # Set mouse position inside target
-    game_range._MOUSE_X = 120
-    game_range._MOUSE_Y = 120
+    game_range.mouse_x = 120
+    game_range.mouse_y = 120
     
     initial_score = game_range.score()
     game_range.check_target_hit()

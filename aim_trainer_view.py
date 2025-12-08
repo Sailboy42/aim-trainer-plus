@@ -1,27 +1,32 @@
 """
 View for Aim Trainer
 """
-import pygame, random, sys, os
-from pygame.locals import *
+from typing import TYPE_CHECKING
+import pygame
+import pygame_gui
 
 
 class AimTrainerView:
     """
     Prompts text and images for aim trainer
 
-    FONT: a method
-    start_bg_raw
-    end_bg_raw
-    range_bg_raw
-    _status
-    _start_bg
-    _end_bg
-    _range_bg
+    FONT_DEFAULT: default font for UI
+    FONT_LARGE: large font for titles
+    FONT_XLARGE: extra large font for game over
+    start_bg_raw: raw start background image
+    end_bg_raw: raw end background image
+    range_bg_raw: raw game background image
+    _status: reference to AimTrainerRange instance
+    _start_bg: scaled start background
+    _end_bg: scaled end background
+    _range_bg: scaled game background
     """
 
     pygame.init()
 
-    FONT = pygame.font.SysFont('cs_regular.ttf', 48)
+    FONT_DEFAULT = pygame.font.Font(None, 48)
+    FONT_LARGE = pygame.font.Font(None, 72)
+    FONT_XLARGE = pygame.font.Font(None, 112)
 
     start_bg_raw = pygame.image.load("range-start.png")
     end_bg_raw = pygame.image.load("range-end.png")
@@ -56,7 +61,7 @@ class AimTrainerView:
         Displays text on screen
         """
         if font is None:
-            font = self.FONT
+            font = self.FONT_DEFAULT
         if color is None:
             color = self._status.COLORS["RED"]
         # Load text
@@ -72,7 +77,7 @@ class AimTrainerView:
         """
         Endgame text and final status and prompts user of next steps
         """
-        self._status.window_surface.blit(self._bg_end, (0, 0))
+        self._status.window_surface.blit(self._end_bg, (0, 0))
         # End of game prompt
         self._status.window_surface.fill(self._status.COLORS["BLACK"])
         self.draw_text(
@@ -80,7 +85,7 @@ class AimTrainerView:
             self._status.window_surface,
             200,
             325,
-            pygame.font.SysFont('cs_regular.ttf', 72, True),
+            self.FONT_LARGE,
         )
         # Restart game prompt
         self.draw_text(
@@ -89,7 +94,7 @@ class AimTrainerView:
         # Game stats prompt
         self.draw_text(
             "Accuracy: " + str(self._status.accuracy()) + "%",
-            self.status.window_surface,
+            self._status.window_surface,
             269,
             414,
         )
@@ -134,7 +139,7 @@ class AimTrainerView:
         """
         Set background to range image
         """
-        self._status.window_surface.blit(self.range_bg, (0, 0))
+        self._status.window_surface.blit(self._range_bg, (0, 0))
 
     def start_screen(self):
         """
@@ -151,14 +156,14 @@ class AimTrainerView:
                 self._status.window_surface,
                 90,
                 150,
-                pygame.font.SysFont('cs_regular.ttf', 112),
+                self.FONT_XLARGE,
             )
             self.draw_text(
                 "Easy",
                 self._status.window_surface,
                 83,
                 485,
-                self.FONT,
+                self.FONT_DEFAULT,
                 self._status.COLORS["BLACK"],
             )
             self.draw_text(
@@ -166,7 +171,7 @@ class AimTrainerView:
                 self._status.window_surface,
                 312,
                 485,
-                self.FONT,
+                self.FONT_DEFAULT,
                 self._status.COLORS["BLACK"],
             )
             self.draw_text(
@@ -174,6 +179,6 @@ class AimTrainerView:
                 self._status.window_surface,
                 580,
                 485,
-                self.FONT,
+                self.FONT_DEFAULT,
                 self._status.COLORS["BLACK"],
             )

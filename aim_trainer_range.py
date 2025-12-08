@@ -1,6 +1,7 @@
 """
 Module for Aim Trainer
 """
+
 import sys
 import random
 import pygame
@@ -20,6 +21,59 @@ def compute_accuracy(hits: int, shots: int) -> float:
     if shots != 0 and hits != 0:
         return round(hits / shots * 100)
     return 0
+
+
+def get_difficulty_settings(difficulty: str) -> list:
+    """
+    Get game settings based on difficulty level.
+
+    Args:
+        difficulty: Difficulty level ("easy", "medium", "hard")
+
+    Returns:
+        list: [time_limit, num_targets, target_size]
+    """
+    settings = {
+        "easy": [9, 2, 40],
+        "medium": [6, 4, 30],
+        "hard": [5, 5, 20],
+    }
+    return settings.get(difficulty, [])
+
+
+def is_target_valid(target, min_x: int, min_y: int) -> bool:
+    """
+    Check if target spawned in valid area (not overlapping UI).
+
+    Args:
+        target: pygame.Rect object
+        min_x: Minimum allowed x coordinate
+        min_y: Minimum allowed y coordinate
+
+    Returns:
+        bool: True if target is valid
+    """
+    return target.topleft[0] >= min_x and target.topleft[1] >= min_y
+
+
+def check_mouse_collision(mouse_x: int, mouse_y: int, target) -> bool:
+    """
+    Check if mouse position overlaps with target rectangle.
+
+    Args:
+        mouse_x: Mouse X coordinate
+        mouse_y: Mouse Y coordinate
+        target: pygame.Rect object
+
+    Returns:
+        bool: True if collision detected
+    """
+    return (
+        mouse_x > target.topleft[0]
+        and mouse_x < target.bottomright[0]
+        and mouse_y > target.topleft[1]
+        and mouse_y < target.bottomright[1]
+    )
 
 
 class AimTrainerRange:
@@ -126,24 +180,12 @@ class AimTrainerRange:
         Determine which settings will be used for game based off difficulty selected
 
         Args:
-            a string representing the difficulty
+            difficulty: a string representing the difficulty
 
         Returns:
             a list containing ints that determine game difficulty settings
         """
-        # Settings for difficulty. (time, amount of target, size of target)
-        difficulty_settings = {
-            "easy": [9, 2, 40],
-            "medium": [6, 4, 30],
-            "hard": [5, 5, 20],
-        }
-        # Saves settings to config per difficulty
-        if difficulty == "easy":
-            self._config = difficulty_settings["easy"]
-        elif difficulty == "medium":
-            self._config = difficulty_settings["medium"]
-        elif difficulty == "hard":
-            self._config = difficulty_settings["hard"]
+        self._config = get_difficulty_settings(difficulty)
         return self._config
 
     def resize_target(self):
@@ -178,31 +220,24 @@ class AimTrainerRange:
         """
         Check to see if target is in bound if is remove target from list and if not add to target counter
         """
-        if (
-            self._targets[self._amount_targets].topleft[0] < 135
-            and self._targets[self._amount_targets].topleft[1] < 65
-        ):
+        if not is_target_valid(self._targets[self._amount_targets], 135, 65):
             self._targets.pop(self._amount_targets)
         else:
             self._amount_targets += 1
 
     def check_target_hit(self):
         """
-        Check to see if mouse position is the same as a target. If so remove target from scree, subtract from amount of visible targets, add to score, and add to hit count
+        Check to see if mouse position is the same as a target. If so remove target from screen, subtract from amount of visible targets, add to score, and add to hit count
         """
         # Check to see if mouse position overlaps with targets
         for target in self._targets[:]:
             # if target hit play hit sound, remove target, and add to score
-            if (
-                self.mouse_x > target.topleft[0]
-                and self.mouse_x < target.bottomright[0]
-                and self.mouse_y > target.topleft[1]
-                and self.mouse_y < target.bottomright[1]
-            ):
+            if check_mouse_collision(self.mouse_x, self.mouse_y, target):
                 self._targets.remove(target)
                 self._amount_targets -= 1
                 self._score += 1
                 self._hit_shots += 1
+            self._total_shots += 1
 
     def time_actions(self):
         """

@@ -1,8 +1,61 @@
 """
 Controller for Aim Trainer
 """
+
 import pygame
 from pygame import MOUSEBUTTONDOWN, MOUSEMOTION, QUIT, KEYDOWN, K_ESCAPE
+
+
+def handle_quit_event(status):
+    """
+    Check and handle quit events (window close or ESC key).
+
+    Args:
+        status: AimTrainerRange instance
+    """
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            status.terminate()
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                status.terminate()
+
+
+def get_mouse_position_from_event():
+    """
+    Get current mouse position from pygame events.
+
+    Returns:
+        tuple: (x, y) mouse coordinates
+    """
+    for event in pygame.event.get():
+        if event.type == MOUSEMOTION:
+            return pygame.mouse.get_pos()
+    return None
+
+
+def detect_difficulty_selection(status, mouse_pos):
+    """
+    Detect which difficulty button was clicked.
+
+    Args:
+        status: AimTrainerRange instance
+        mouse_pos: tuple of (x, y) mouse coordinates
+
+    Returns:
+        str: difficulty level ("easy", "medium", "hard") or None
+    """
+    if mouse_pos is None:
+        return None
+
+    difficulty_boxes = status.difficulty_boxes()
+    if difficulty_boxes[0].collidepoint(mouse_pos):
+        return "easy"
+    if difficulty_boxes[1].collidepoint(mouse_pos):
+        return "medium"
+    if difficulty_boxes[2].collidepoint(mouse_pos):
+        return "hard"
+    return None
 
 
 class AimTrainerController:
@@ -28,7 +81,6 @@ class AimTrainerController:
         Returns:
             a boolean dependent on choice
         """
-        # check to see if player is trying to exit game
         for event in pygame.event.get():
             if event.type == MOUSEBUTTONDOWN:
                 return True
@@ -41,39 +93,27 @@ class AimTrainerController:
         Returns:
             a string stating a difficulty
         """
-        # Check to see what difficulty player chose
         for event in pygame.event.get():
             if event.type == MOUSEBUTTONDOWN:
-                if self._status.difficulty_boxes()[0].collidepoint(
-                    pygame.mouse.get_pos()
-                ):
-                    return "easy"
-                if self._status.difficulty_boxes()[1].collidepoint(
-                    pygame.mouse.get_pos()
-                ):
-                    return "medium"
-                if self._status.difficulty_boxes()[2].collidepoint(
-                    pygame.mouse.get_pos()
-                ):
-                    return "hard"
-
+                mouse_pos = pygame.mouse.get_pos()
+                difficulty = detect_difficulty_selection(
+                    self._status, mouse_pos
+                )
+                if difficulty:
+                    return difficulty
         return None
 
     def mouse_pos(self):
         """
-        Saves mouse position when mouse is clicked
+        Saves mouse position when mouse is moved
         """
-        if pygame.event.get == MOUSEMOTION:
-            self._status.MOUSE_X = pygame.mouse.get_pos[0]
-            self._status.MOUSE_Y = pygame.mouse.get_pos[1]
+        mouse_position = get_mouse_position_from_event()
+        if mouse_position:
+            self._status.mouse_x = mouse_position[0]
+            self._status.mouse_y = mouse_position[1]
 
     def exit_program(self):
         """
         Checks if player is trying to escape or close game window and then closes it
         """
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                self._status.terminate()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self._status.terminate()
+        handle_quit_event(self._status)

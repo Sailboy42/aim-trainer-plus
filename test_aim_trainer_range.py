@@ -70,20 +70,21 @@ def test_target_hit_detection():
     """Test that target hit detection works correctly"""
     game_range = AimTrainerRange()
     game_range.populate_config("easy")
-    
+
     # Add a target manually at a known position
     import pygame
+
     pygame.init()
     target_rect = pygame.Rect(100, 100, 40, 40)
     game_range._targets.append(target_rect)
-    
+
     # Set mouse position inside target
     game_range.mouse_x = 120
     game_range.mouse_y = 120
-    
+
     initial_score = game_range.score()
     game_range.check_target_hit()
-    
+
     # Check that target was hit and removed
     assert game_range.score() == initial_score + 1
     assert game_range._hit_shots == 1
@@ -94,20 +95,21 @@ def test_target_miss_detection():
     """Test that missed shots are counted correctly"""
     game_range = AimTrainerRange()
     game_range.populate_config("easy")
-    
+
     # Add a target manually at a known position
     import pygame
+
     pygame.init()
     target_rect = pygame.Rect(100, 100, 40, 40)
     game_range._targets.append(target_rect)
-    
+
     # Set mouse position outside target
     game_range._MOUSE_X = 200
     game_range._MOUSE_Y = 200
-    
+
     initial_score = game_range.score()
     game_range.check_target_hit()
-    
+
     # Check that score didn't increase but shot was counted
     assert game_range.score() == initial_score
     assert len(game_range.targets()) == 1  # target still there
@@ -117,10 +119,10 @@ def test_game_end_condition_time_up():
     """Test that game ends when time runs out"""
     game_range = AimTrainerRange()
     game_range.populate_config("easy")
-    
+
     # Set time to 0
     game_range._config[0] = 0
-    
+
     # time_actions should return False when time is up
     assert game_range.time_actions() is False
 
@@ -129,9 +131,9 @@ def test_game_continues_with_time():
     """Test that game continues when time remains"""
     game_range = AimTrainerRange()
     game_range.populate_config("easy")
-    
+
     # Ensure time is above 0
     game_range._config[0] = 5
-    
+
     # time_actions should return True when time remains
     assert game_range.time_actions() is True

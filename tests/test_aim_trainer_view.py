@@ -1,6 +1,13 @@
 """
 Unit tests for aim_trainer_view.py
 """
+
+import sys
+from pathlib import Path
+
+# Add src directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
 import pytest
 import pygame
 from aim_trainer_view import AimTrainerView
@@ -35,7 +42,7 @@ def test_draw_text_with_defaults(view_with_range):
 def test_view_status_attribute(view_with_range):
     """Test that view maintains status attribute"""
     view, game_range = view_with_range
-    assert hasattr(view, '_status')
+    assert hasattr(view, "_status")
     assert view._status is game_range
 
 
@@ -49,9 +56,9 @@ def test_view_font_initialization(view_with_range):
 def test_view_backgrounds_loaded(view_with_range):
     """Test that view loads background images"""
     view, game_range = view_with_range
-    assert hasattr(view, '_start_bg')
-    assert hasattr(view, '_end_bg')
-    assert hasattr(view, '_range_bg')
+    assert hasattr(view, "_start_bg")
+    assert hasattr(view, "_end_bg")
+    assert hasattr(view, "_range_bg")
 
 
 def test_backgrounds_are_surfaces(view_with_range):
@@ -101,7 +108,7 @@ def test_draw_text_edge_coordinates(view_with_range):
     """Test draw_text at screen edges"""
     view, game_range = view_with_range
     surface = pygame.Surface((800, 600))
-    
+
     # Test corners
     corners = [(0, 0), (800, 600), (0, 600), (800, 0)]
     for x, y in corners:
@@ -128,7 +135,7 @@ def test_multiple_text_draws_same_surface(view_with_range):
     """Test drawing multiple texts on same surface"""
     view, game_range = view_with_range
     surface = pygame.Surface((800, 600))
-    
+
     texts = ["Text 1", "Text 2", "Text 3", "Text 4"]
     for i, text in enumerate(texts):
         view.draw_text(text, surface, i * 100, i * 100)
@@ -138,7 +145,7 @@ def test_draw_text_with_custom_font(view_with_range):
     """Test draw_text with custom font parameter"""
     view, game_range = view_with_range
     surface = pygame.Surface((800, 600))
-    custom_font = pygame.font.SysFont('arial', 24)
+    custom_font = pygame.font.SysFont("arial", 24)
     view.draw_text("Test", surface, 10, 10, font=custom_font)
 
 
@@ -148,5 +155,3 @@ def test_draw_text_with_custom_color(view_with_range):
     surface = pygame.Surface((800, 600))
     custom_color = (255, 0, 0)  # Red
     view.draw_text("Test", surface, 10, 10, color=custom_color)
-
-

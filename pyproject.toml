@@ -2,6 +2,12 @@
 line-length = 80
 preview = true
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+
 [tool.pylint.main]
 # Pygame contains C code, which causes Pylint to report many false positive
 # warnings. Suppress those here.

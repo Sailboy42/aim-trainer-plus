@@ -2,6 +2,12 @@
 Unit tests for aim_trainer_range.py
 """
 
+import sys
+from pathlib import Path
+
+# Add src directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
 import pytest
 import pygame
 from aim_trainer_range import AimTrainerRange
@@ -99,16 +105,16 @@ def test_time_actions_time_remaining(game_range):
 
 def test_accuracy_calculation(game_range):
     """Test accuracy calculation"""
-    game_range._hitShots = 7
-    game_range._totalShots = 10
+    game_range._hit_shots = 7
+    game_range._total_shots = 10
     accuracy = game_range.accuracy()
     assert accuracy == 70
 
 
 def test_accuracy_zero_shots(game_range):
     """Test accuracy when no shots taken"""
-    game_range._hitShots = 0
-    game_range._totalShots = 0
+    game_range._hit_shots = 0
+    game_range._total_shots = 10
     accuracy = game_range.accuracy()
     assert accuracy == 0
 
@@ -149,8 +155,8 @@ def test_populate_config_invalid_difficulty(game_range):
 
 def test_accuracy_all_hits(game_range):
     """Test accuracy when all shots hit"""
-    game_range._hitShots = 10
-    game_range._totalShots = 10
+    game_range._hit_shots = 10
+    game_range._total_shots = 10
     accuracy = game_range.accuracy()
     assert accuracy == 100
 
@@ -165,8 +171,8 @@ def test_accuracy_no_hits(game_range):
 
 def test_accuracy_rounding(game_range):
     """Test accuracy rounding to nearest integer"""
-    game_range._hitShots = 1
-    game_range._totalShots = 3
+    game_range._hit_shots = 1
+    game_range._total_shots = 3
     accuracy = game_range.accuracy()
     # 1/3 * 100 = 33.333... rounds to 33
     assert accuracy == 33

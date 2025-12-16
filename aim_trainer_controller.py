@@ -1,8 +1,8 @@
 """
 Controller for Aim Trainer
 """
-import pygame, random, sys, os
-from pygame.locals import *
+import pygame
+from pygame import MOUSEBUTTONDOWN, MOUSEMOTION, QUIT, KEYDOWN, K_ESCAPE
 
 
 class AimTrainerController:

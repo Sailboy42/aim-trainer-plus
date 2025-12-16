@@ -214,7 +214,7 @@ class AimTrainerRange:
         if self._config[0] <= 0:
             # end game and display player stats
             return False
-        self.tick_counter += 1
+        self._tick_counter += 1
 
         if self._tick_counter % self.FPS == 0:
             # game still going subtract from time

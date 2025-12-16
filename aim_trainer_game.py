@@ -1,6 +1,7 @@
 """
 Compiles aim trainer mvc files.
 """
+
 import pygame
 
 from aim_trainer_range import AimTrainerRange

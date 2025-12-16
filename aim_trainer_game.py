@@ -1,8 +1,7 @@
 """
 Compiles aim trainer mvc files.
 """
-import pygame, random, sys, os
-from pygame.locals import *
+import pygame
 
 from aim_trainer_range import AimTrainerRange
 from aim_trainer_view import AimTrainerView

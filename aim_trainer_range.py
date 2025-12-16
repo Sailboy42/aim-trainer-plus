@@ -1,8 +1,10 @@
 """
 Module for Aim Trainer
 """
-import pygame, random, sys, os
-from pygame.locals import *
+import sys
+import random
+
+import pygame
 
 
 class AimTrainerRange:

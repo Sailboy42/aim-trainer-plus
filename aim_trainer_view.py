@@ -1,8 +1,7 @@
 """
 View for Aim Trainer
 """
-import pygame, random, sys, os
-from pygame.locals import *
+import pygame
 
 
 class AimTrainerView:

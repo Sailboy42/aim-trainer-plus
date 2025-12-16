@@ -55,10 +55,16 @@ pip install -r requirements.txt
 
 ## Usage
 
-Run the game:
+Run the game from the root directory:
 
 ```bash
-python aim_trainer_game.py
+python main.py
+```
+
+Or directly:
+
+```bash
+python -m src.aim_trainer_game
 ```
 
 **Gameplay:**
@@ -129,17 +135,27 @@ pytest --cov=. --cov-report=html
 
 ```
 aim-trainer-plus/
-├── aim_trainer_game.py      # Game orchestrator
-├── aim_trainer_range.py     # Model (game logic)
-├── aim_trainer_controller.py # Controller (input)
-├── aim_trainer_view.py      # View (rendering)
-├── test_aim_trainer_*.py    # Test suite (53 tests)
-├── requirements.txt         # Python dependencies
-├── README.md               # This file
-└── assets/                 # Images and fonts
-    ├── range-start.png     # Start screen background
-    ├── range2.png          # Gameplay background
-    ├── range-end.png       # Endgame screen background
-    ├── target.png          # Target image
-    └── cs_regular.ttf      # Font file
+├── main.py                 # Entry point
+├── src/                    # Source code
+│   ├── __init__.py
+│   ├── aim_trainer_game.py      # Game orchestrator
+│   ├── aim_trainer_range.py     # Model (game logic)
+│   ├── aim_trainer_controller.py # Controller (input)
+│   └── aim_trainer_view.py      # View (rendering)
+├── tests/                  # Test suite
+│   ├── __init__.py
+│   ├── test_aim_trainer_range.py
+│   ├── test_aim_trainer_controller.py
+│   └── test_aim_trainer_view.py
+├── assets/                 # Game assets
+│   ├── range-start.png     # Start screen background
+│   ├── range2.png          # Gameplay background
+│   ├── range-end.png       # Endgame screen background
+│   ├── target.png          # Target image
+│   ├── cs_regular.ttf      # Font file
+│   ├── metalHit.wav        # Hit sound effect
+│   └── snipersound.wav     # Alternate sound
+├── requirements.txt        # Python dependencies
+├── pyproject.toml          # Project configuration
+└── README.md              # This file
 ```

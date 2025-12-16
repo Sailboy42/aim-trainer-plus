@@ -1,6 +1,13 @@
 """
 Unit tests for aim_trainer_controller.py
 """
+
+import sys
+from pathlib import Path
+
+# Add src directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
 import pytest
 import pygame
 from aim_trainer_controller import AimTrainerController
@@ -27,7 +34,7 @@ def test_choose_difficulty_returns_none_without_click():
     pygame.init()
     game_range = AimTrainerRange()
     controller = AimTrainerController(game_range)
-    
+
     # Clear event queue
     pygame.event.clear()
     result = controller.choose_difficulty()
@@ -38,7 +45,7 @@ def test_choose_difficulty_returns_none_without_click():
 def test_controller_status_attribute(controller_with_range):
     """Test that controller maintains status attribute"""
     controller, game_range = controller_with_range
-    assert hasattr(controller, '_status')
+    assert hasattr(controller, "_status")
     assert controller._status is game_range
 
 
@@ -61,21 +68,21 @@ def test_choose_difficulty_all_three_options(controller_with_range):
 def test_mouse_pos_method_exists(controller_with_range):
     """Test that mouse_pos method exists and can be called"""
     controller, game_range = controller_with_range
-    assert hasattr(controller, 'mouse_pos')
+    assert hasattr(controller, "mouse_pos")
     assert callable(controller.mouse_pos)
 
 
 def test_exit_program_method_exists(controller_with_range):
     """Test that exit_program method exists"""
     controller, game_range = controller_with_range
-    assert hasattr(controller, 'exit_program')
+    assert hasattr(controller, "exit_program")
     assert callable(controller.exit_program)
 
 
 def test_end_screen_check_method_exists(controller_with_range):
     """Test that end_screen_check method exists"""
     controller, game_range = controller_with_range
-    assert hasattr(controller, 'end_screen_check')
+    assert hasattr(controller, "end_screen_check")
     assert callable(controller.end_screen_check)
 
 
@@ -94,5 +101,3 @@ def test_choose_difficulty_valid_difficulties(controller_with_range):
     result = controller.choose_difficulty()
     valid_difficulties = [None, "easy", "medium", "hard"]
     assert result in valid_difficulties
-
-

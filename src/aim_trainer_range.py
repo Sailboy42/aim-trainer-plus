@@ -8,6 +8,7 @@ Responsibilities:
 - Calculate player accuracy and performance metrics
 """
 
+import os
 import sys
 import random
 
@@ -175,7 +176,10 @@ class AimTrainerRange:
         Returns:
             pygame.Surface scaled to current target size
         """
-        target_image = pygame.image.load("target.png")
+        assets_dir = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), "assets"
+        )
+        target_image = pygame.image.load(os.path.join(assets_dir, "target.png"))
         size = self._config[2]
         return pygame.transform.scale(target_image, (size, size))
 

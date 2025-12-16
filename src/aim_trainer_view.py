@@ -8,6 +8,7 @@ Responsibilities:
 - Show endgame statistics screen
 """
 
+import os
 import pygame
 
 
@@ -31,6 +32,11 @@ class AimTrainerView:
 
     pygame.init()
 
+    # Get assets directory path
+    ASSETS_DIR = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "assets"
+    )
+
     # Fonts
     FONT = pygame.font.SysFont("cs_regular.ttf", 48)
     FONT_DEFAULT = pygame.font.SysFont("cs_regular.ttf", 48)
@@ -38,9 +44,11 @@ class AimTrainerView:
     FONT_XLARGE = pygame.font.SysFont("cs_regular.ttf", 112)
 
     # Background images
-    start_bg_raw = pygame.image.load("range-start.png")
-    end_bg_raw = pygame.image.load("range-end.png")
-    range_bg_raw = pygame.image.load("range2.png")
+    start_bg_raw = pygame.image.load(
+        os.path.join(ASSETS_DIR, "range-start.png")
+    )
+    end_bg_raw = pygame.image.load(os.path.join(ASSETS_DIR, "range-end.png"))
+    range_bg_raw = pygame.image.load(os.path.join(ASSETS_DIR, "range2.png"))
 
     def __init__(self, status):
         """Initialize view with reference to game model and scale backgrounds."""

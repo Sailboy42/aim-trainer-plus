@@ -47,9 +47,7 @@ class AimTrainerView:
     start_bg_raw = pygame.image.load(
         os.path.join(ASSETS_DIR, "range-start.png")
     )
-    end_bg_raw = pygame.image.load(
-        os.path.join(ASSETS_DIR, "range-end.png")
-    )
+    end_bg_raw = pygame.image.load(os.path.join(ASSETS_DIR, "range-end.png"))
     range_bg_raw = pygame.image.load(os.path.join(ASSETS_DIR, "range2.png"))
 
     def __init__(self, status):
@@ -58,13 +56,9 @@ class AimTrainerView:
 
         # Scale backgrounds to window dimensions
         window_size = (status.WINDOW_WIDTH, status.WINDOW_HEIGHT)
-        self._start_bg = pygame.transform.scale(
-            self.start_bg_raw, window_size
-        )
+        self._start_bg = pygame.transform.scale(self.start_bg_raw, window_size)
         self._end_bg = pygame.transform.scale(self.end_bg_raw, window_size)
-        self._range_bg = pygame.transform.scale(
-            self.range_bg_raw, window_size
-        )
+        self._range_bg = pygame.transform.scale(self.range_bg_raw, window_size)
 
     # ==================== Text Rendering ====================
 

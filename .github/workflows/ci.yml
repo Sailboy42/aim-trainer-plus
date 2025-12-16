@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, storyboard-work, feature/* ]
+    branches: [ main, storyboard-main, storyboard-work, feature/* ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, storyboard-main ]
 
 jobs:
   test:
@@ -22,12 +22,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install -e .
         pip install pylint pytest
-    
+
     - name: Run pylint
       run: |
-        pylint aim_trainer_*.py --fail-under=9.0
-    
+        python -m pylint src/*.py --rcfile=pyproject.toml --fail-under=9.0
+
     - name: Run pytest
       run: |
-        pytest -v
+        python -m pytest tests -v --tb=short

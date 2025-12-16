@@ -1,6 +1,13 @@
 """
-Module for Aim Trainer
+Game logic and state management for aim trainer.
+
+Responsibilities:
+- Manage game configuration and difficulty settings
+- Track game state: score, targets, time remaining
+- Handle target generation, validation, and hit detection
+- Calculate player accuracy and performance metrics
 """
+
 import sys
 import random
 
@@ -9,25 +16,28 @@ import pygame
 
 class AimTrainerRange:
     """
-    aim trainer functions that handle data
+    Model component managing game logic and state.
+
+    Difficulty Settings:
+    - Easy: 9 seconds, 2 targets, 40px size
+    - Medium: 6 seconds, 4 targets, 30px size
+    - Hard: 5 seconds, 5 targets, 20px size
 
     Attributes:
-        COLORS: a dict with a string key indicating a color mapped to a tuple of ints representing a RGBa code
-        WINDOW_HEIGHT: a int representing the amount of pixels wanted for height
-        WINDOW_WIDTH: a int representing the amount of pixels wanted for width
-        window_surface: a function that displays a window with given height and width
-        main_clock: an object that helps track time
-        _config: a list containing ints that determine game difficulty settings
-        _tick_counter: a int of the time gone by in milliseconds
-        _targets: a list containing cords for upcoming target spawn
-        _amount_targets: a int indicating the amount of valid targets in play
-        _score: a int indicating the score of the player
-        FPS: a int indicating the FPS the game is being played at
-        _hit_shots: a int indicating the amount of shots that hit a target
-        _total_shots: a int indicating the amount of shots taken
-        _MOUSE_Y: a int for the starting position of the mouse on y axis
-        _MOUSE_X: a int for the starting position of the mouse on the x axis
-
+        COLORS: Color definitions (BLACK, WHITE, RED, BLUE)
+        WINDOW_HEIGHT: Display height (768px)
+        WINDOW_WIDTH: Display width (1366px)
+        window_surface: Pygame display surface
+        main_clock: Pygame clock for timing
+        _config: Current difficulty settings [time, num_targets, target_size]
+        _tick_counter: Frame counter for timing
+        _targets: List of active target rectangles
+        _amount_targets: Count of currently valid targets
+        _score: Current player score
+        FPS: Game frame rate (75)
+        _hit_shots: Number of successful hits
+        _total_shots: Total shots fired
+        _MOUSE_X, _MOUSE_Y: Current mouse position
     """
 
     # Colors
@@ -42,196 +52,227 @@ class AimTrainerRange:
     WINDOW_HEIGHT = 768
     WINDOW_WIDTH = 1366
 
-    # Bounds for window
+    # Display and timing
     window_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-
-    # time
     main_clock = pygame.time.Clock()
 
+    # Difficulty settings: (time_seconds, num_targets, target_size_px)
+    DIFFICULTY_SETTINGS = {
+        "easy": [9, 2, 40],
+        "medium": [6, 4, 30],
+        "hard": [5, 5, 20],
+    }
+
     def __init__(self):
-        """
-        Sets starting variables
-        """
-        # Game variables
+        """Initialize game state variables."""
+        # Game configuration
         self._config = []
+
+        # Timing
         self._tick_counter = 0
+        self.FPS = 75
+
+        # Target management
         self._targets = []
         self._amount_targets = 0
+
+        # Scoring
         self._score = 0
-        self.FPS = 75
         self._hit_shots = 0
         self._total_shots = 0
-        # Mouse position
-        self._MOUSE_Y = round(self.WINDOW_HEIGHT / 2)
+
+        # Input tracking
         self._MOUSE_X = round(self.WINDOW_WIDTH / 2)
+        self._MOUSE_Y = round(self.WINDOW_HEIGHT / 2)
 
-    def config(self):
-        """
-        Returns:
-            a list of ints being difficulty settings
-        """
-        return self._config
-
-    def targets(self):
-        """
-        Returns:
-            targets: a list of ints being future target spawn cords
-        """
-        return self._targets
-
-    def score(self):
-        """
-        Returns:
-            a int being the score
-        """
-        return self._score
-    
-    def MOUSE_Y(self):
-        """
-        Returns:
-            a int of the mouse y position
-        """
-        return self._MOUSE_Y
-    
-    def MOUSE_X(self):
-        """
-        Returns:
-            a int of the mouse x position
-        """
-        return self._MOUSE_X
-
-    def terminate():
-        """
-        Ends Pygame
-        """
-        pygame.quit()
-        sys.exit()
-
-    def difficulty_boxes(self):
-        """
-        Generates box placement cords for difficulty text to be placed on
-
-        Returns:
-            a list of tuples containing ints which are cords/dim for boxes
-        """
-        difficulty_rects = []
-        difficulty_rects.append(pygame.Rect(5, 450, 240, 100))
-        difficulty_rects.append(pygame.Rect(255, 450, 240, 100))
-        difficulty_rects.append(pygame.Rect(505, 450, 240, 100))
-        return difficulty_rects
+    # ==================== Configuration ====================
 
     def populate_config(self, difficulty):
         """
-        Determine which settings will be used for game based off difficulty selected
+        Set game configuration based on selected difficulty.
 
         Args:
-            a string representing the difficulty
+            difficulty: "easy", "medium", "hard", or None
 
         Returns:
-            a list containing ints that determine game difficulty settings
+            List of difficulty settings or empty list if invalid
         """
-        # Settings for difficulty. (time, amount of target, size of target)
-        DIFFICULTY_SETTINGS = {
-            "easy": [9, 2, 40],
-            "medium": [6, 4, 30],
-            "hard": [5, 5, 20],
-        }
-        # Saves settings to config per difficulty
-        if difficulty == "easy":
-            self._config = DIFFICULTY_SETTINGS["easy"]
-        elif difficulty == "medium":
-            self._config = DIFFICULTY_SETTINGS["medium"]
-        elif difficulty == "hard":
-            self._config = DIFFICULTY_SETTINGS["hard"]
+        if difficulty in self.DIFFICULTY_SETTINGS:
+            self._config = self.DIFFICULTY_SETTINGS[difficulty].copy()
+        else:
+            self._config = []
         return self._config
 
-    def resize_target(self):
+    def get_difficulty_settings(self, difficulty):
         """
-        Resize target based off difficulty settings
+        Retrieve settings for a specific difficulty without applying them.
+
+        Args:
+            difficulty: Difficulty level as string
 
         Returns:
-            a image of the target
+            List [time, num_targets, target_size] or None if invalid
         """
-        # Takes imported image
-        target_image = pygame.image.load("target.png")
-        # Scale image according to config
-        target_image = pygame.transform.scale(
-            target_image, (self._config[2], self._config[2])
-        )
-        return target_image
+        return self.DIFFICULTY_SETTINGS.get(difficulty)
+
+    def difficulty_boxes(self):
+        """
+        Generate selection boxes for difficulty buttons on start screen.
+
+        Returns:
+            List of pygame.Rect objects for easy, medium, and hard buttons
+        """
+        return [
+            pygame.Rect(5, 450, 240, 100),  # Easy
+            pygame.Rect(255, 450, 240, 100),  # Medium
+            pygame.Rect(505, 450, 240, 100),  # Hard
+        ]
+
+    # ==================== Target Management ====================
 
     def generate_targets(self):
         """
-        Generate random placement of targets and add those cords to a list
+        Spawn a new target at random position within valid bounds.
+
+        Valid area excludes UI region in top-left (135x65px).
         """
-        self._targets.append(
-            pygame.Rect(
-                (random.randint(0, self.WINDOW_WIDTH - self._config[2])),
-                (random.randint(0, self.WINDOW_HEIGHT - self._config[2])),
-                self._config[2],
-                self._config[2],
-            )
-        )
+        target_size = self._config[2]
+        x = random.randint(0, self.WINDOW_WIDTH - target_size)
+        y = random.randint(0, self.WINDOW_HEIGHT - target_size)
+        self._targets.append(pygame.Rect(x, y, target_size, target_size))
+
+    def is_target_valid(self, target):
+        """
+        Check if target is within valid play area.
+
+        Args:
+            target: pygame.Rect object representing target
+
+        Returns:
+            True if target doesn't overlap UI area, False otherwise
+        """
+        # UI region is top-left 135x65 pixels
+        return not (target.topleft[0] < 135 and target.topleft[1] < 65)
 
     def check_valid_target(self):
         """
-        Check to see if target is in bound if is remove target from list and if not add to target counter
+        Validate and remove out-of-bounds targets.
+
+        Removes targets that overlap with UI area, increments counter
+        for valid targets.
         """
-        if (
-            self._targets[self._amount_targets].topleft[0] < 135
-            and self._targets[self._amount_targets].topleft[1] < 65
-        ):
-            self._targets.pop(self._amount_targets)
-        else:
-            self._amount_targets += 1
+        if self._amount_targets < len(self._targets):
+            target = self._targets[self._amount_targets]
+            if not self.is_target_valid(target):
+                self._targets.pop(self._amount_targets)
+            else:
+                self._amount_targets += 1
+
+    def resize_target(self):
+        """
+        Load and resize target image based on current difficulty.
+
+        Returns:
+            pygame.Surface scaled to current target size
+        """
+        target_image = pygame.image.load("target.png")
+        size = self._config[2]
+        return pygame.transform.scale(target_image, (size, size))
+
+    # ==================== Hit Detection ====================
+
+    def check_mouse_collision(self, mouse_x, mouse_y, target):
+        """
+        Check if mouse position overlaps with target rectangle.
+
+        Args:
+            mouse_x: Mouse x coordinate
+            mouse_y: Mouse y coordinate
+            target: pygame.Rect object
+
+        Returns:
+            True if collision detected, False otherwise
+        """
+        return (
+            target.topleft[0] < mouse_x < target.bottomright[0]
+            and target.topleft[1] < mouse_y < target.bottomright[1]
+        )
 
     def check_target_hit(self):
         """
-        Check to see if mouse position is the same as a target. If so remove target from scree, subtract from amount of visible targets, add to score, and add to hit count
+        Check for collisions between mouse and targets.
+
+        For each hit:
+        - Remove target from play
+        - Increment score
+        - Increment hit counter
+        - Decrement active target count
         """
-        # Check to see if mouse position overlaps with targets
         for target in self._targets[:]:
-            # if target hit play hit sound, remove target, and add to score
-            if (
-                self._MOUSE_X > target.topleft[0]
-                and self._MOUSE_X < target.bottomright[0]
-                and self._MOUSE_Y > target.topleft[1]
-                and self._MOUSE_Y < target.bottomright[1]
-            ):
+            if self.check_mouse_collision(self._MOUSE_X, self._MOUSE_Y, target):
                 self._targets.remove(target)
                 self._amount_targets -= 1
                 self._score += 1
                 self._hit_shots += 1
 
+    # ==================== Timing ====================
+
     def time_actions(self):
         """
-        Check time to see whether time is up or not. If times up, return False. If not subtract time from clock and return True
+        Update game timer and check if time has expired.
 
+        Decrements remaining time once per second (at FPS rate).
         Returns:
-            a boolean determining if the game should continue or not
+            True if game should continue, False if time expired
         """
-        # Monitor if game is over my watching time
         if self._config[0] <= 0:
-            # end game and display player stats
             return False
-        self._tick_counter += 1
 
+        self._tick_counter += 1
         if self._tick_counter % self.FPS == 0:
-            # game still going subtract from time
             self._config[0] -= 1
+
         return True
+
+    # ==================== Scoring and Statistics ====================
 
     def accuracy(self):
         """
-        Calculates accuracy
+        Calculate player accuracy as percentage.
 
         Returns:
-            accuracy: a int being accuracy
+            Integer 0-100 representing hit percentage, 0 if no shots fired
         """
-        # Calculate score
-        if self._totalShots != 0 and self._hitShots != 0:
-            accuracy = round(self._hitShots / self._totalShots * 100)
-        else:
-            accuracy = 0
+        if self._total_shots == 0:
+            return 0
+        return round(self._hit_shots / self._total_shots * 100)
 
-        return accuracy
+    # ==================== Getters ====================
+
+    def config(self):
+        """Get current difficulty configuration."""
+        return self._config
+
+    def targets(self):
+        """Get list of active targets."""
+        return self._targets
+
+    def score(self):
+        """Get current score."""
+        return self._score
+
+    def MOUSE_X(self):
+        """Get current mouse X position."""
+        return self._MOUSE_X
+
+    def MOUSE_Y(self):
+        """Get current mouse Y position."""
+        return self._MOUSE_Y
+
+    # ==================== Utility ====================
+
+    @staticmethod
+    def terminate():
+        """Clean shutdown of pygame and application."""
+        pygame.quit()
+        sys.exit()

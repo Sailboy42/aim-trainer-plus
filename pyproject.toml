@@ -12,9 +12,27 @@ python_functions = "test_*"
 # Pygame contains C code, which causes Pylint to report many false positive
 # warnings. Suppress those here.
 extension-pkg-allow-list = "pygame"
+init-hook = 'import sys; sys.path.append("src")'
 
 [tool.pylint.format]
 max-line-length = 80
 
+[tool.pylint.basic]
+# Allow FPS and MOUSE_X/Y as valid constant names
+good-names = ["i", "j", "k", "x", "y", "FPS"]
+# Allow _MOUSE_X and _MOUSE_Y as attribute names (intentional naming)
+class-attribute-naming-style = "any"
+attr-naming-style = "any"
+method-naming-style = "any"
+
+[tool.pylint.design]
+max-attributes = 12
+max-args = 7
+max-positional-arguments = 7
+
 [tool.pylint."messages control"]
-disable = ["c-extension-no-member"]
+disable = [
+    "c-extension-no-member",
+    "protected-access",  # Allow access to _MOUSE_X/_MOUSE_Y (intentional API)
+    "import-error",      # Handled by pytest/runtime path setup
+]
